@@ -1,6 +1,8 @@
 import './css/styles.css';
 import { fetchCountries } from './js/fetchCountries';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { markupCountriesList } from './js/markup/markup-list';
+import { markupCountriesInfo } from './js/markup/markup-info';
 
 var debounce = require('lodash.debounce');
 
@@ -12,7 +14,12 @@ const DEBOUNCE_DELAY = 300;
 input.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 
 function onInput(e) {
-  let countryName = e.target.value.trim();
+    let countryName = e.target.value.trim();
+    
+    if (!countryName.length) {
+        console.clear();
+        return;
+    }
 
   fetchCountries(countryName)
     .then(countries => renderCountries(countries))
@@ -31,10 +38,10 @@ function renderCountries(countries) {
       );
     } else if (countries.length > 1 && countries.length <= 10) {
       clearRenderedCountries();
-      return markupCountriesList(countries);
+      return markupCountriesList(countries, countryListEl);
     } else {
       clearRenderedCountries();
-      markupCountriesInfo(countries);
+      markupCountriesInfo(countries, countryInfoEl);
     }
   } catch (error) {
     Notify.failure(
@@ -42,58 +49,6 @@ function renderCountries(countries) {
     );
     console.log(error);
   }
-}
-
-function markupCountriesList(countries) {
-  const markup = countries
-    .map(country => {
-      return `<li class='country-list__item'>
-      <img 
-      class='country-list__img'
-      src='${country.flags.svg}'
-      alt='Flag of ${country.name.official}'
-      width=20
-      height=20
-      />
-      <span class='country-list__name'>
-      ${country.name.official}</span>
-      </li>`;
-    })
-    .join('');
-
-  countryListEl.innerHTML = markup;
-}
-
-function markupCountriesInfo(countries) {
-  const markup = countries
-    .map(({ name, flags, capital, population, languages }) => {
-      return `<div class='country-info__wrapper'>
-            <img 
-            class='country-info__img'
-            src='${flags.svg}'
-            alt='Flag of ${name.official}'
-            width=20
-            height=20
-            />
-            <h2 class='country-info__'>${name.official}</h2>
-            </div>
-        <ul class='country-info__'>
-        <li class='country-info__'>
-        <span class='country-info__'>Capital:</span><span class='country-info__'>${capital}</span>
-        </li>
-        <li>
-        <span class='country-info__'>Population:</span><span class='country-info__'>${population}</span>
-        </li>
-        <li class='country-info__'>
-        <span class='country-info__'>Languages:</span><span class='country-info__'>${Object.values(
-          languages
-        )}</span>
-        </li>
-        </ul>`;
-    })
-    .join('');
-
-  countryInfoEl.innerHTML = markup;
 }
 
 function clearRenderedCountries() {
