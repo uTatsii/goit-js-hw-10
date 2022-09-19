@@ -25,12 +25,15 @@ function onInput(e) {
 function renderCountries(countries) {
   try {
     if (countries.length > 10) {
+      clearRenderedCountries();
       return Notify.info(
         'Too many matches found. Please enter a more specific name.'
       );
     } else if (countries.length > 1 && countries.length <= 10) {
+      clearRenderedCountries();
       return markupCountriesList(countries);
     } else {
+      clearRenderedCountries();
       markupCountriesInfo(countries);
     }
   } catch (error) {
@@ -91,4 +94,9 @@ function markupCountriesInfo(countries) {
     .join('');
 
   countryInfoEl.innerHTML = markup;
+}
+
+function clearRenderedCountries() {
+  countryListEl.innerHTML = '';
+  countryInfoEl.innerHTML = '';
 }
