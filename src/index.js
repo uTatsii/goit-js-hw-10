@@ -1,4 +1,4 @@
 import './css/styles.css';
-import fetchCountries from './fetchCountries';
+import './js/fetchCountries';
 
 const DEBOUNCE_DELAY = 300;
